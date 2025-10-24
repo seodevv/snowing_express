@@ -1,10 +1,16 @@
-const logger = require('./logger');
+import logger from '@/lib/logger';
+import { Response } from 'express';
 
-const capitalize = (str) => {
+export function capitalize(str: string) {
   return str.replace(/^[a-z]/, (item) => item.toLocaleUpperCase());
-};
+}
 
-const mailFormat = (app, subject, target, url) => {
+export function mailFormat(
+  app: string,
+  subject: string,
+  target: string,
+  url: string
+) {
   return `<div style="margin: 50px auto; display: block; width: 600px;">
   <table style="padding: 15px; border: 1px solid #999; border-radius: 5px; font-family: sans-serif;">
       <thead>
@@ -47,9 +53,14 @@ const mailFormat = (app, subject, target, url) => {
       </tbody>
   </table>
 </div>`;
-};
+}
 
-const authMailFormat = (app, subject, target, otp) => {
+export function authMailFormat(
+  app: string,
+  subject: string,
+  target: string,
+  otp: string
+) {
   return `<div style="margin: 50px auto; display: block; width: 600px;">
   <table style="padding: 15px; border: 1px solid #999; border-radius: 5px; font-family: sans-serif;">
       <thead>
@@ -100,56 +111,71 @@ const authMailFormat = (app, subject, target, otp) => {
       </tbody>
   </table>
 </div>`;
-};
+}
 
-const createResponse = ({
-  response,
-  status = 200,
-  data,
-  url = '/',
-  error,
-  message = 'ok',
-}) => {
-  if (!response) {
-    logger.error('createResponse - response required');
-    return;
-  }
-  switch (status) {
-    case 200:
-      if (data) {
-        setTimeout(() => {
-          response.json({ data, message });
-        }, 0);
-      } else {
-        setTimeout(() => {
-          response.json({ message });
-        }, 0);
-      }
-      break;
-    case 300:
-      setTimeout(() => {
-        response.redirect(url);
-      }, 0);
-      break;
-    case 400:
-      logger.error(error);
-      setTimeout(() => {
-        response
-          .status(400)
-          .json({ error, message: message !== 'ok' ? message : 'bad request' });
-      }, 0);
+// interface HTTP20_<T> {
+//   response: Response;
+//   status: 200 | 201 | 204;
+//   data?: T;
+//   message?: string;
+// }
+// interface HTTP30_ {
+//   response: Response;
+//   status: 307;
+//   url: string;
+//   message?: string;
+// }
+// interface HTTP40_ {
+//   response: Response;
+//   status: 400 | 401 | 403 | 404;
+//   message?: string;
+// }
+// interface HTTP50_ {
+//   response: Response;
+//   status: 500;
+//   message?: string;
+// }
+// export function createResponse<T extends any>(args: HTTP20_<T>): unknown;
+// export function createResponse(args: HTTP30_): unknown;
+// export function createResponse(args: HTTP40_): unknown;
+// export function createResponse(args: HTTP50_): unknown;
+// export function createResponse<T>(
+//   args: HTTP20_<T> | HTTP30_ | HTTP40_ | HTTP50_
+// ): unknown {
+//   const { response, status, message } = args;
 
-      break;
-    case 500:
-      logger.error(error);
-      setTimeout(() => {
-        response.status(500).json({
-          error,
-          message: message !== 'ok' ? message : 'server error',
-        });
-      }, 0);
-      break;
-  }
-};
-
-module.exports = { capitalize, mailFormat, authMailFormat, createResponse };
+//   switch (status) {
+//     case 200:
+//       response.status(200).json({ data: args.data, message: message || 'OK' });
+//       break;
+//     case 201:
+//       response
+//         .status(201)
+//         .json({ data: args.data, message: message || 'Created' });
+//       break;
+//     case 204:
+//       response.status(204).json({ message: message || 'No Content' });
+//       break;
+//     case 307:
+//       response.redirect(args.url);
+//       break;
+//     case 400:
+//       response.status(400).json({ message: message || 'Bad Request' });
+//       break;
+//     case 401:
+//       response.status(401).json({ message: message || 'Unauthorized' });
+//       break;
+//     case 403:
+//       response.status(403).json({ message: message || 'Forbidden' });
+//       break;
+//     case 404:
+//       response.status(404).json({ message: message || 'Not Found' });
+//       break;
+//     case 500:
+//       response.status(500).json({
+//         message: message || 'Internal Server Error',
+//       });
+//       break;
+//   }
+//   return;
+// }

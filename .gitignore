@@ -1,11 +1,25 @@
-# folder
+# package
 node_modules/
-logs/
-.cert/
-.vscode/
 
+# build
+dist/
+
+# logs
+logs/
+
+# certificate
+.cert
+
+# environment
+.env
+
+# git
+.gitignore
 
 # env file
 .env
 .gitignore
 vapidKeys.json
+
+# image
+public/

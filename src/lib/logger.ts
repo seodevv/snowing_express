@@ -1,20 +1,23 @@
-const appRoot = require('app-root-path');
-const { AxiosError } = require('axios');
-const winston = require('winston');
+import appRoot from 'app-root-path';
+import winston, { format, transports, Logger } from 'winston';
+import { AxiosError } from 'axios';
 
-const createErrorMessage = (error) => {
-  let message = `message: ${error.message}`;
-  message += `trace: ${error.stack}`;
+// 에러 메시지 포맷 생성
+const createErrorMessage = (error: any): string => {
+  let message = `${error.message}\n`;
+  message += `  ${error.stack}\n`;
+
   delete error.message;
-  for (key in error) {
+  for (const key in error) {
     message += `\n  ${key}: ${error[key]}`;
   }
 
   return message;
 };
 
+// Error 객체를 문자열로 변환
 const enumerateErrorFormat = winston.format((info) => {
-  if ((info instanceof Error) | (info instanceof AxiosError)) {
+  if (info instanceof Error || info instanceof AxiosError) {
     Object.assign(info, { message: createErrorMessage(info) });
   }
   return info;
@@ -40,30 +43,32 @@ const options = {
   },
 };
 
-const logger = winston.createLogger({
+const logger: Logger = winston.createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
+  format: format.combine(
+    format.timestamp(),
     enumerateErrorFormat(),
     process.env.NODE_ENV === 'development'
-      ? winston.format.colorize()
-      : winston.format.uncolorize(),
-    winston.format.splat(),
-    winston.format.printf(
+      ? format.colorize()
+      : format.uncolorize(),
+    format.splat(),
+    format.printf(
       ({ timestamp, level, message }) => `${timestamp} [${level}] ${message}`
     )
   ),
-  transports: [new winston.transports.File(options.file)],
+  transports: [new transports.File(options.file)],
 });
 
+// 개발 환경에서 console 로그 추가
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console(options.console)); // 개발 시 console로도 출력
+  logger.add(new transports.Console(options.console));
 }
 
-logger.stream = {
-  write: (message) => {
+// morgan 등에서 사용할 stream 객체를 추가
+(logger as any).stream = {
+  write: (message: string) => {
     logger.info(message.replace(/\r\n|\r|\n/, ''));
   },
 };
 
-module.exports = logger;
+export default logger;

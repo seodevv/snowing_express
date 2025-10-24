@@ -5,37 +5,40 @@
   "main": "server.js",
   "homepage": ".",
   "scripts": {
-    "start": "nodemon server.js",
-    "prod": "NODE_ENV=production nodemon server.js"
+    "build": "tsc && tsc-alias",
+    "start": "node dist/server.js",
+    "dev": "npx tsx watch ./src/server.ts"
   },
   "author": "seodev",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.4.0",
-    "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "fluent-ffmpeg": "^2.1.2",
-    "fs": "^0.0.1-security",
-    "https": "^1.0.0",
-    "multer": "^1.4.5-lts.1",
+    "fs-extra": "^11.3.2",
+    "morgan": "^1.10.0",
     "mysql2": "^3.4.0",
-    "sharp": "^0.32.3",
-    "socket.io": "^4.7.0"
+    "nodemailer": "^6.9.6",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/crypto-js": "^4.2.2",
+    "@types/express": "^5.0.3",
+    "@types/fs-extra": "^11.0.4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^24.9.1",
+    "@types/nodemailer": "^7.0.3",
+    "@types/winston": "^2.4.4",
     "app-root-path": "^3.1.0",
-    "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.3.1",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "nodemailer": "^6.9.6",
-    "nodemon": "^3.0.1",
-    "process": "^0.11.10",
-    "web-push": "^3.6.5",
-    "winston": "^3.10.0"
+    "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.3"
   }
 }
