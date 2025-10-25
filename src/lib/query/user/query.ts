@@ -12,7 +12,7 @@ export interface User extends RowDataPacket {
   regist: string;
 }
 export const select_user = (args: {
-  id?: number;
+  id?: string;
   type?: 'app' | 'google';
   password?: boolean;
   email?: string;

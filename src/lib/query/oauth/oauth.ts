@@ -14,7 +14,7 @@ export async function selectBasicInfo(args: {
   key: string;
 }): Promise<BasicInfo | undefined> {
   const queryOptions = select_basicinfo(args);
-  logger.debug(queryOptions.sql);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<BasicInfo[]>(queryOptions);
@@ -29,7 +29,7 @@ export async function selectOauth(args: {
   type: string;
 }): Promise<OAuth[]> {
   const queryOptions = select_oauth(args);
-  logger.debug(queryOptions.sql);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<OAuth[]>(queryOptions);
@@ -48,7 +48,7 @@ export async function insertBasicInfo(args: {
     const check = await selectBasicInfo(args);
     if (typeof check === 'undefined') {
       const queryOptions = insert_basicinfo(args);
-      logger.debug(queryOptions.sql);
+      //logger.debug(queryOptions.sql);
 
       await pool.query<BasicInfo[]>(queryOptions);
       return { result: true, message: 'inserted' };
@@ -56,7 +56,7 @@ export async function insertBasicInfo(args: {
 
     if (check.value !== args.value) {
       const updateOptions = update_basicinfo(args);
-      logger.debug(updateOptions.sql);
+      // logger.debug(updateOptions.sql);
 
       await pool.query(updateOptions);
       return { result: true, message: 'updated' };

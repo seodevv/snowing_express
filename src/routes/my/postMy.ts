@@ -1,5 +1,24 @@
-import { httpBadRequestResponse } from '@/lib/responsesHandlers';
-import { TypedRequestBodyParams } from '@/model/Request';
+import logger from '@/lib/logger';
+import {
+  deleteAddresses,
+  deleteWallets,
+  insertAddresses,
+  insertWallets,
+  updateAddresesDefaultSetFalse,
+  updateAddresses,
+  updateWalletDefaultSetFalse,
+  updateWallets,
+} from '@/lib/query/my/my';
+import { selectBasicInfo } from '@/lib/query/oauth/oauth';
+import { selectUser, updateUser } from '@/lib/query/user/user';
+import {
+  httpBadRequestResponse,
+  httpInternalServerErrorResponse,
+  httpNotFoundResponse,
+  httpSuccessResponse,
+} from '@/lib/responsesHandlers';
+import { TypedRequestBody, TypedRequestBodyParams } from '@/model/Request';
+import { TypedResponse } from '@/model/Response';
 import { Router } from 'express';
 
 const jwt = require('jsonwebtoken');
@@ -25,10 +44,10 @@ router.post(
         phone?: string;
       },
       {
-        type?: string;
+        type: string;
       }
     >,
-    res
+    res: TypedResponse<{ message: string }>
   ) => {
     const { type } = req.params;
     const {
@@ -45,32 +64,32 @@ router.post(
       etc,
       phone,
     } = req.body;
-    if (type !== 'add' && type !== 'edit') {
+    if (typeof userId === 'undefined') {
       return httpBadRequestResponse(res);
     }
-    if (typeof id !== 'undefined')
-      if (
-        !id ||
-        (['add', 'edit'].includes(type) &&
-          (!userId ||
-            typeof isDefault !== 'boolean' ||
-            !countryId ||
-            !provinceId ||
-            !lastName ||
-            !firstName ||
-            !city ||
-            !address ||
-            !phone))
-      ) {
-        return createResponse({ response: res, status: 400 });
-      }
+
     try {
       if (isDefault) {
         await updateAddresesDefaultSetFalse({ userId });
       }
 
       switch (type) {
-        case 'add':
+        case 'add': {
+          if (
+            typeof userId === 'undefined' ||
+            typeof isDefault === 'undefined' ||
+            typeof countryId === 'undefined' ||
+            typeof provinceId === 'undefined' ||
+            typeof lastName === 'undefined' ||
+            typeof firstName === 'undefined' ||
+            typeof postal_code === 'undefined' ||
+            typeof city === 'undefined' ||
+            typeof address === 'undefined' ||
+            typeof etc === 'undefined' ||
+            typeof phone === 'undefined'
+          ) {
+            return httpBadRequestResponse(res);
+          }
           await insertAddresses({
             userId,
             isDefault,
@@ -85,7 +104,23 @@ router.post(
             phone,
           });
           break;
-        case 'edit':
+        }
+        case 'edit': {
+          if (
+            typeof id === 'undefined' ||
+            typeof isDefault === 'undefined' ||
+            typeof countryId === 'undefined' ||
+            typeof provinceId === 'undefined' ||
+            typeof lastName === 'undefined' ||
+            typeof firstName === 'undefined' ||
+            typeof postal_code === 'undefined' ||
+            typeof city === 'undefined' ||
+            typeof address === 'undefined' ||
+            typeof etc === 'undefined' ||
+            typeof phone === 'undefined'
+          ) {
+            return httpBadRequestResponse(res);
+          }
           await updateAddresses({
             id,
             isDefault,
@@ -100,73 +135,136 @@ router.post(
             phone,
           });
           break;
-        case 'delete':
+        }
+        case 'delete': {
+          if (typeof id === 'undefined') {
+            return httpBadRequestResponse(res);
+          }
           await deleteAddresses({ id });
           break;
+        }
       }
-      createResponse({ response: res });
+      return httpSuccessResponse(res, {});
+      // createResponse({ response: res });
     } catch (error) {
-      createResponse({ response: res, error, status: 500 });
+      logger.error(error);
+      return httpInternalServerErrorResponse(res);
+      // createResponse({ response: res, error, status: 500 });
     }
   }
 );
 
-router.post('/wallets/:type', async (req, res) => {
-  const { type } = req.params;
-  const { id, userId, isDefault, card_data } = req.body;
-  if (
-    (type === 'add' && (!userId || !isDefault || !card_data)) ||
-    (type === 'edit' && (!id || !isDefault || !card_data)) ||
-    (type === 'delete' && !id)
-  ) {
-    return createResponse({ response: res, status: 400 });
-  }
-
-  try {
-    if (isDefault) {
-      await updateWalletDefaultSetFalse({ userId });
+// POST /post/my/wallets/:type
+router.post(
+  '/wallets/:type',
+  async (
+    req: TypedRequestBodyParams<
+      { id?: string; userId?: string; isDefault?: boolean; card_data?: string },
+      { type: string }
+    >,
+    res
+  ) => {
+    const { type } = req.params;
+    const { id, userId, isDefault, card_data } = req.body;
+    if (typeof userId === 'undefined') {
+      return httpBadRequestResponse(res);
     }
 
-    switch (type) {
-      case 'add':
-        await insertWallets({ userId, isDefault, card_data });
-        break;
-      case 'edit':
-        await updateWallets({ id, isDefault, card_data });
-        break;
-      case 'delete':
-        await deleteWallets({ id });
-        break;
+    try {
+      if (isDefault) {
+        await updateWalletDefaultSetFalse({ userId });
+      }
+
+      switch (type) {
+        case 'add': {
+          if (
+            typeof userId === 'undefined' ||
+            typeof isDefault === 'undefined' ||
+            typeof card_data === 'undefined'
+          ) {
+            return httpBadRequestResponse(res);
+          }
+          await insertWallets({ userId, isDefault, card_data });
+          break;
+        }
+        case 'edit': {
+          if (typeof id === 'undefined' || typeof card_data === 'undefined') {
+            return httpBadRequestResponse(res);
+          }
+          await updateWallets({ id, card_data });
+          break;
+        }
+        case 'delete': {
+          if (typeof id === 'undefined') {
+            return httpBadRequestResponse(res);
+          }
+          await deleteWallets({ id });
+          break;
+        }
+      }
+      return httpSuccessResponse(res, {});
+      // createResponse({ response: res });
+    } catch (error) {
+      logger.error(error);
+      return httpInternalServerErrorResponse(res);
+      // createResponse({ response: res, error, status: 500 });
     }
-    createResponse({ response: res });
-  } catch (error) {
-    createResponse({ response: res, error, status: 500 });
   }
-});
+);
 
-router.post('/account', async (req, res) => {
-  const { id, nick, email, phone } = req.body;
-  if (!id || !nick || !phone)
-    return createResponse({ response: res, status: 400 });
+// POST /post/my/account
+router.post(
+  '/account',
+  async (
+    req: TypedRequestBody<{ id?: string; nick?: string; phone?: string }>,
+    res: TypedResponse<{ message: string }>
+  ) => {
+    const { id, nick, phone } = req.body;
+    if (
+      typeof id === 'undefined' ||
+      typeof nick === 'undefined' ||
+      typeof phone === 'undefined'
+    ) {
+      return httpBadRequestResponse(res);
+    }
 
-  try {
-    await updateUser({ id, nick, phone });
-    const [data] = await selectUser({ id });
-    const { value: secret } = await selectBasicInfo({
-      name: 'encrypt',
-      key: 'secret',
-    });
-    const token = jwt.sign(data, secret);
-    res.cookie('token', token, {
-      sameSite: 'none',
-      httpOnly: true,
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    createResponse({ response: res });
-  } catch (error) {
-    createResponse({ response: res, error, status: 500 });
+    try {
+      await updateUser({ id, nick, phone });
+      // const [data] = await selectUser({ id });
+      const user = await selectUser({ id });
+      if (typeof user === 'undefined') {
+        return httpNotFoundResponse(res, 'User not found');
+      }
+
+      // const { value: secret } = await selectBasicInfo({
+      //   name: 'encrypt',
+      //   key: 'secret',
+      // });
+      const secret = await selectBasicInfo({
+        name: 'encrypt',
+        key: 'secret',
+      });
+
+      if (typeof secret === 'undefined') {
+        return httpInternalServerErrorResponse(res);
+      }
+
+      const token = jwt.sign(user, secret?.value);
+      res.cookie('token', token, {
+        sameSite: 'none',
+        httpOnly: true,
+        secure: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      return httpSuccessResponse(res, {});
+      // createResponse({ response: res });
+    } catch (error) {
+      logger.error(error);
+      return httpInternalServerErrorResponse(res);
+      // createResponse({ response: res, error, status: 500 });
+    }
   }
-});
+);
 
 export default router;

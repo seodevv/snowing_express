@@ -62,12 +62,12 @@ WHERE
   }
 
   if (typeof brand !== 'undefined') {
-    queryOptions.sql += `   AND c.brand = ?\n`;
+    queryOptions.sql += `   AND b.brand = ?\n`;
     queryOptions.values.push(brand);
   }
 
   queryOptions.sql += `GROUP BY\n`;
-  queryOptions.sql += `     b.rand\n`;
+  queryOptions.sql += `     b.brand\n`;
   queryOptions.sql += `ORDER BY\n`;
   queryOptions.sql += `     b.brand`;
 
@@ -199,10 +199,10 @@ export const select_product_list = (args: {
     | 'priceDesc'
     | 'nameAsc'
     | 'nameDesc';
-  limit: number;
-  brand: string;
-  price?: number;
-  size?: number;
+  limit?: number;
+  brand?: string;
+  price?: string;
+  size?: string;
   category?: string;
   type?: string;
   subjects?: string;
@@ -236,9 +236,12 @@ FROM
     PRODUCT_LIST pl
 INNER JOIN PRODUCT_SUBJECT ps ON ps.id = pl.subject
 INNER JOIN PRODUCT_TYPE pt ON pt.id = ps.type
-    ${
-      typeof category !== 'undefined'
-        ? `INNER JOIN 
+`,
+    values: [],
+  };
+
+  if (typeof category !== 'undefined') {
+    queryOptions.sql += `INNER JOIN 
 		(SELECT 
 			id, 
 			category 
@@ -246,13 +249,13 @@ INNER JOIN PRODUCT_TYPE pt ON pt.id = ps.type
 			CATEGORY 
 		WHERE 
 			category = ?) c
-		ON c.id = pt.category`
-        : ''
-    }
-INNER JOIN BRANDS b ON b.id = pl.brand
-  ${
-    typeof size !== 'undefined'
-      ? `INNER JOIN
+    ON c.id = pt.category
+`;
+    queryOptions.values.push(category);
+  }
+
+  if (typeof size !== 'undefined') {
+    queryOptions.sql += `INNER JOIN
     (SELECT
         id
       FROM
@@ -261,18 +264,12 @@ INNER JOIN BRANDS b ON b.id = pl.brand
         size IN (${size})
       GROUP BY
         id) s
-      ON s.id = pl.id`
-      : ''
+      ON s.id = pl.id
+`;
   }
-  WHERE
-    1 = 1
-`,
-    values: [],
-  };
 
-  if (typeof category !== 'undefined') {
-    queryOptions.values.push(category);
-  }
+  queryOptions.sql += `WHERE\n`;
+  queryOptions.sql += `    1 = 1\n`;
 
   if (typeof brand !== 'undefined' && brand !== 'all') {
     queryOptions.sql += `   AND b.brand = ?\n`;
@@ -337,7 +334,7 @@ INNER JOIN BRANDS b ON b.id = pl.brand
   return queryOptions;
 };
 
-export const select_product_list_by_id = (id: number) => {
+export const select_product_list_by_id = (id: string) => {
   const queryOptions: QueryOptions = {
     sql: `
 SELECT 
@@ -372,7 +369,7 @@ export interface ProductNavigator extends RowDataPacket {
   subject: string;
   name: string;
 }
-export const select_productNavigator = (id: number) => {
+export const select_productNavigator = (id: string) => {
   const queryOptions: QueryOptions = {
     sql: `
 SELECT
@@ -401,7 +398,7 @@ export interface ProductSize extends RowDataPacket {
   size: string;
   quantity: number;
 }
-export const select_productsize = (id: number) => {
+export const select_productsize = (id: string) => {
   const queryOptions: QueryOptions = {
     sql: `
 SELECT
@@ -428,7 +425,7 @@ export interface ProductDetail extends RowDataPacket {
   detail: number;
   text: string;
 }
-export const select_productdetail = (id: number) => {
+export const select_productdetail = (id: string) => {
   const queryOptions: QueryOptions = {
     sql: `
 SELECT
@@ -530,7 +527,7 @@ export interface CartItem extends RowDataPacket {
   quantity: number;
 }
 export const select_cartraw = (args: {
-  user: number;
+  user: string;
   product: number;
   size: number;
 }) => {
@@ -553,7 +550,7 @@ WHERE
   };
   return queryOptions;
 };
-export const select_cartitem = (args: { user: number; ids: string }) => {
+export const select_cartitem = (args: { user: string; ids: string }) => {
   const { user, ids } = args;
   const queryOptions: QueryOptions = {
     sql: `
@@ -596,7 +593,7 @@ WHERE
   return queryOptions;
 };
 export const insert_cartraw = (args: {
-  user: number;
+  user: string;
   product: number;
   size: number;
   quantity: number;
@@ -610,7 +607,7 @@ export const insert_cartraw = (args: {
 };
 export const update_cartraw_quantity = (args: {
   type: 'increase' | 'decrease';
-  user: number;
+  user: string;
   product: number;
   size: number;
 }) => {
@@ -624,7 +621,7 @@ export const update_cartraw_quantity = (args: {
   return queryOptions;
 };
 export const delete_cartraw = (args: {
-  user: number;
+  user: string;
   product: number;
   size: number;
 }) => {

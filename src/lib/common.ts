@@ -113,69 +113,69 @@ export function authMailFormat(
 </div>`;
 }
 
-// interface HTTP20_<T> {
-//   response: Response;
-//   status: 200 | 201 | 204;
-//   data?: T;
-//   message?: string;
-// }
-// interface HTTP30_ {
-//   response: Response;
-//   status: 307;
-//   url: string;
-//   message?: string;
-// }
-// interface HTTP40_ {
-//   response: Response;
-//   status: 400 | 401 | 403 | 404;
-//   message?: string;
-// }
-// interface HTTP50_ {
-//   response: Response;
-//   status: 500;
-//   message?: string;
-// }
-// export function createResponse<T extends any>(args: HTTP20_<T>): unknown;
-// export function createResponse(args: HTTP30_): unknown;
-// export function createResponse(args: HTTP40_): unknown;
-// export function createResponse(args: HTTP50_): unknown;
-// export function createResponse<T>(
-//   args: HTTP20_<T> | HTTP30_ | HTTP40_ | HTTP50_
-// ): unknown {
-//   const { response, status, message } = args;
+interface HTTP20_<T> {
+  response: Response;
+  status: 200 | 201 | 204;
+  data?: T;
+  message?: string;
+}
+interface HTTP30_ {
+  response: Response;
+  status: 307;
+  url: string;
+  message?: string;
+}
+interface HTTP40_ {
+  response: Response;
+  status: 400 | 401 | 403 | 404;
+  message?: string;
+}
+interface HTTP50_ {
+  response: Response;
+  status: 500;
+  message?: string;
+}
+export function createResponse<T extends any>(args: HTTP20_<T>): unknown;
+export function createResponse(args: HTTP30_): unknown;
+export function createResponse(args: HTTP40_): unknown;
+export function createResponse(args: HTTP50_): unknown;
+export function createResponse<T>(
+  args: HTTP20_<T> | HTTP30_ | HTTP40_ | HTTP50_
+): unknown {
+  const { response, status, message } = args;
 
-//   switch (status) {
-//     case 200:
-//       response.status(200).json({ data: args.data, message: message || 'OK' });
-//       break;
-//     case 201:
-//       response
-//         .status(201)
-//         .json({ data: args.data, message: message || 'Created' });
-//       break;
-//     case 204:
-//       response.status(204).json({ message: message || 'No Content' });
-//       break;
-//     case 307:
-//       response.redirect(args.url);
-//       break;
-//     case 400:
-//       response.status(400).json({ message: message || 'Bad Request' });
-//       break;
-//     case 401:
-//       response.status(401).json({ message: message || 'Unauthorized' });
-//       break;
-//     case 403:
-//       response.status(403).json({ message: message || 'Forbidden' });
-//       break;
-//     case 404:
-//       response.status(404).json({ message: message || 'Not Found' });
-//       break;
-//     case 500:
-//       response.status(500).json({
-//         message: message || 'Internal Server Error',
-//       });
-//       break;
-//   }
-//   return;
-// }
+  switch (status) {
+    case 200:
+      response.status(200).json({ data: args.data, message: message || 'OK' });
+      break;
+    case 201:
+      response
+        .status(201)
+        .json({ data: args.data, message: message || 'Created' });
+      break;
+    case 204:
+      response.status(204).json({ message: message || 'No Content' });
+      break;
+    case 307:
+      response.redirect(args.url);
+      break;
+    case 400:
+      response.status(400).json({ message: message || 'Bad Request' });
+      break;
+    case 401:
+      response.status(401).json({ message: message || 'Unauthorized' });
+      break;
+    case 403:
+      response.status(403).json({ message: message || 'Forbidden' });
+      break;
+    case 404:
+      response.status(404).json({ message: message || 'Not Found' });
+      break;
+    case 500:
+      response.status(500).json({
+        message: message || 'Internal Server Error',
+      });
+      break;
+  }
+  return;
+}

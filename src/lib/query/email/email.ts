@@ -13,7 +13,7 @@ import { QueryOptions } from 'mysql2';
 
 export async function selectEmailInfo(): Promise<Email | undefined> {
   const queryOptions: QueryOptions = select_email();
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Email[]>(queryOptions);
@@ -54,14 +54,14 @@ export async function insertEmailSubscribe(
   email: string
 ): Promise<{ result: boolean; message: string }> {
   const selectOptions = select_subscribe(email);
-  logger.debug(selectOptions);
+  // logger.debug(selectOptions);
 
   try {
     const [rows] = await pool.query<Subscribe[]>(selectOptions);
 
     if (typeof rows[0] === 'undefined') {
       const insertOptions = insert_subscribe(email);
-      logger.debug(insertOptions);
+      // logger.debug(insertOptions);
 
       await pool.query(insertOptions);
       return { result: true, message: 'inserted' };

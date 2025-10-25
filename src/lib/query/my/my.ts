@@ -33,7 +33,7 @@ export async function selectOrder(args: {
   userId?: string;
 }): Promise<Order[]> {
   const queryOptions = select_order(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Order[]>(queryOptions);
@@ -47,9 +47,7 @@ export async function selectOrderProduct(args: {
   orderId?: string;
 }): Promise<OrderProduct[]> {
   const queryOptions = select_order_product(args);
-  logger.debug(args.orderId);
-  logger.debug(queryOptions.sql);
-  logger.debug(queryOptions.values);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<OrderProduct[]>(queryOptions);
@@ -63,7 +61,7 @@ export async function selectOrderDelivery(args: {
   orderId: string;
 }): Promise<OrderDelivery[]> {
   const queryOptions = select_order_delivery(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<OrderDelivery[]>(queryOptions);
@@ -75,7 +73,7 @@ export async function selectOrderDelivery(args: {
 
 export async function selectCountry(): Promise<Country[]> {
   const queryOptions = select_country();
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Country[]>(queryOptions);
@@ -89,7 +87,7 @@ export async function selectProvince(args: {
   countryId: string;
 }): Promise<Province[]> {
   const queryOptions = select_province(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Province[]>(queryOptions);
@@ -104,7 +102,7 @@ export async function selectAddress(args: {
   id?: string;
 }): Promise<Addresses[]> {
   const queryOptions = select_addresses(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Addresses[]>(queryOptions);
@@ -119,7 +117,7 @@ export async function selectWallets(args: {
   id?: string;
 }): Promise<Wallets[]> {
   const queryOptions = select_wallets(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Wallets[]>(queryOptions);
@@ -133,7 +131,7 @@ export async function selectPromotion(args: {
   userId: string;
 }): Promise<Promotion[]> {
   const queryOptions = select_promotion(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const [rows] = await pool.query<Promotion[]>(queryOptions);
@@ -144,20 +142,20 @@ export async function selectPromotion(args: {
 }
 
 export async function insertAddresses(args: {
-  userId: boolean;
+  userId: string;
   isDefault: boolean;
-  countryId: number;
-  provinceId: number;
+  countryId: string;
+  provinceId: string;
   lastName: string;
   firstName: string;
-  postal_code: number;
+  postal_code: string;
   city: string;
   address: string;
   etc: string;
   phone: string;
 }): Promise<{ result: true; message: string }> {
   const queryOptions = insert_addresses(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -168,12 +166,12 @@ export async function insertAddresses(args: {
 }
 
 export async function insertWallets(args: {
-  userId: number;
+  userId: string;
   isDefault: boolean;
   card_data: string;
 }): Promise<{ result: true; message: string }> {
   const queryOptions = insert_wallets(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -184,10 +182,10 @@ export async function insertWallets(args: {
 }
 
 export async function updateAddresesDefaultSetFalse(args: {
-  userId: number;
+  userId: string;
 }): Promise<{ result: true; message: string }> {
   const queryOptions = update_addresses_default_false(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -198,10 +196,10 @@ export async function updateAddresesDefaultSetFalse(args: {
 }
 
 export async function updateWalletDefaultSetFalse(args: {
-  userId: number;
+  userId: string;
 }): Promise<{ result: true; message: string }> {
   const queryOptions = update_wallets_default_false(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -212,20 +210,20 @@ export async function updateWalletDefaultSetFalse(args: {
 }
 
 export async function updateAddresses(args: {
-  id: number;
+  id: string;
   isDefault: boolean;
-  countryId: number;
-  provinceId: number;
+  countryId: string;
+  provinceId: string;
   lastName: string;
   firstName: string;
-  postal_code: number;
+  postal_code: string;
   city: string;
   address: string;
   etc: string;
   phone: string;
 }): Promise<{ result: true; message: string }> {
   const queryOptions = update_addresses(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -236,11 +234,11 @@ export async function updateAddresses(args: {
 }
 
 export async function updateWallets(args: {
-  id: number;
+  id: string;
   card_data: string;
 }): Promise<true> {
   const queryOptions = update_wallets_card_data(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -250,9 +248,9 @@ export async function updateWallets(args: {
   }
 }
 
-export async function deleteAddresses(args: { id: number }): Promise<true> {
+export async function deleteAddresses(args: { id: string }): Promise<true> {
   const queryOptions = delete_addresses(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     await pool.query(queryOptions);
@@ -264,7 +262,7 @@ export async function deleteAddresses(args: { id: number }): Promise<true> {
 
 export async function deleteWallets(args: { id: string }) {
   const queryOptions = delete_wallets(args);
-  logger.debug(queryOptions);
+  //logger.debug(queryOptions.sql);
 
   try {
     const check = await selectWallets({ id: args.id });
@@ -272,7 +270,7 @@ export async function deleteWallets(args: { id: string }) {
 
     if (check[0] && check[0].isDefault) {
       const updateOptions = update_wallets_default_max(check[0].userid);
-      logger.debug(updateOptions);
+      // logger.debug(updateOptions);
 
       await pool.query(updateOptions);
     }

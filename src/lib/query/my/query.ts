@@ -238,13 +238,13 @@ WHERE
   return queryOptions;
 };
 export const insert_addresses = (args: {
-  userId: boolean;
+  userId: string;
   isDefault: boolean;
-  countryId: number;
-  provinceId: number;
+  countryId: string;
+  provinceId: string;
   lastName: string;
   firstName: string;
-  postal_code: number;
+  postal_code: string;
   city: string;
   address: string;
   etc: string;
@@ -298,13 +298,13 @@ VALUES
   return queryOptions;
 };
 export const update_addresses = (args: {
-  id: number;
+  id: string;
   isDefault: boolean;
-  countryId: number;
-  provinceId: number;
+  countryId: string;
+  provinceId: string;
   lastName: string;
   firstName: string;
-  postal_code: number;
+  postal_code: string;
   city: string;
   address: string;
   etc: string;
@@ -358,7 +358,7 @@ UPDATE
 
   return queryOptions;
 };
-export const update_addresses_default_false = (args: { userId: number }) => {
+export const update_addresses_default_false = (args: { userId: string }) => {
   const userId = args.userId;
   const queryOptions: QueryOptions = {
     sql: `UPDATE addresses a SET a.default = false WHERE a.user = ?`,
@@ -367,7 +367,7 @@ export const update_addresses_default_false = (args: { userId: number }) => {
 
   return queryOptions;
 };
-export const delete_addresses = (args: { id: number }) => {
+export const delete_addresses = (args: { id: string }) => {
   const id = args.id;
   const queryOptions: QueryOptions = {
     sql: `DELETE FROM addresses WHERE id = ?`,
@@ -417,7 +417,7 @@ WHERE
   return queryOptions;
 };
 export const insert_wallets = (args: {
-  userId: number;
+  userId: string;
   isDefault: boolean;
   card_data: string;
 }) => {
@@ -429,7 +429,7 @@ export const insert_wallets = (args: {
 
   return queryOptions;
 };
-export const update_wallets_default_false = (args: { userId: number }) => {
+export const update_wallets_default_false = (args: { userId: string }) => {
   const userId = args.userId;
   const queryOptions: QueryOptions = {
     sql: `UPDATE wallets w SET w.isDefault = false WHERE w.user = ?`,
@@ -438,7 +438,7 @@ export const update_wallets_default_false = (args: { userId: number }) => {
   return queryOptions;
 };
 export const update_wallets_card_data = (args: {
-  id: number;
+  id: string;
   card_data: string;
 }) => {
   const { id, card_data } = args;

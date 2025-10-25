@@ -256,7 +256,7 @@ router.get('/user/login/info', async (req: TypedRequestCookies, res) => {
 
     // const { id, type, email } = jwt.verify(token, secret.value);
     const { id, type, email } = jwt.verify(token, secret.value) as {
-      id: number;
+      id: string;
       type: 'app' | 'google';
       email: string;
     };

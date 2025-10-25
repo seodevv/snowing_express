@@ -8,7 +8,7 @@ import {
 import { QueryOptions, ResultSetHeader } from 'mysql2';
 
 export async function selectUser(args: {
-  id?: number;
+  id?: string;
   type?: 'app' | 'google';
   password?: boolean;
   email?: string;
@@ -41,7 +41,7 @@ export async function insertUser(args: {
         values: [type, email, password, nick, picture],
       };
       const [result] = await pool.query<ResultSetHeader>(queryOptions);
-      const data = await selectUser({ id: result.insertId });
+      const data = await selectUser({ id: result.insertId.toString() });
       return data as User;
     }
 
@@ -52,7 +52,7 @@ export async function insertUser(args: {
 }
 
 export async function updateUser(args: {
-  id: number;
+  id: string;
   nick: string;
   phone: string;
 }) {

@@ -11,10 +11,11 @@ import { TypedRequestQuery } from '@/model/Request';
 import { selectWish } from '@/lib/query/product/product';
 import axios from 'axios';
 import myRouter from '../my/getMy';
+import productRouter from '../product/getProduct';
 
 const router = Router();
 
-// router.use('/product', require('../product/getProduct'));
+router.use('/product', productRouter);
 router.use('/my', myRouter);
 
 // GET /get/secret

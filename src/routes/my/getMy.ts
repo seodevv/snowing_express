@@ -63,7 +63,7 @@ router.get(
           if (typeof id === 'undefined') {
             return httpBadRequestResponse(res);
           }
-          logger.debug(parseInt(id));
+          // logger.debug(parseInt(id));
           const result = await selectOrderProduct({ orderId: id });
           return httpSuccessResponse(res, { data: result });
         }
